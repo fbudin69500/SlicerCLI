@@ -86,7 +86,7 @@ CMAKE_DEPENDENT_OPTION(
 
 set(EXTERNAL_PROJECT_BUILD_TYPE "Release" CACHE STRING "Default build type for support libraries")
 
-set( Slicer_Revision "27000" CACHE STRING "Download source code from Slicer at this revision" )
+set( Slicer_Revision "0" CACHE STRING "Download source code from Slicer at this revision. 0 for current revision" )
 option(USE_SYSTEM_zlib "build using the system version of zlib" OFF)
 option(USE_SYSTEM_ITK "Build using an externally defined version of ITK" OFF)
 option(USE_SYSTEM_SlicerExecutionModel "Build using an externally defined version of SlicerExecutionModel"  OFF)
