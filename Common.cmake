@@ -64,7 +64,7 @@ if(NOT COMMAND SETIFEMPTY)
 endif()
 
 #-----------------------------------------------------------------------------
-set(${PROJECT_NAME}_USE_QT ON)
+set(${PROJECT_NAME}_USE_QT OFF)
 if(${PROJECT_NAME}_USE_QT )
   if(NOT QT4_FOUND)
     find_package(Qt4 REQUIRED)

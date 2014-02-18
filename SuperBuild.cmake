@@ -92,9 +92,9 @@ option(USE_SYSTEM_ITK "Build using an externally defined version of ITK" OFF)
 option(USE_SYSTEM_SlicerExecutionModel "Build using an externally defined version of SlicerExecutionModel"  OFF)
 option(USE_SYSTEM_VTK "Build using an externally defined version of VTK" OFF)
 option(USE_SYSTEM_teem "Build using an externally defined version of teem" OFF)
-option(Slicer_BUILD_DICOM_SUPPORT "Build Dicom Support" ON)
+option(Slicer_BUILD_DICOM_SUPPORT "Build Dicom Support" OFF)
 set( ${PROJECT_NAME}_BUILD_ZLIB_SUPPORT ON )
-option(BUILD_TESTING "Build Testing" ON)
+option(BUILD_TESTING "Build Testing" OFF)
 #------------------------------------------------------------------------------
 # ${PROJECT_NAME} dependency list
 #------------------------------------------------------------------------------
