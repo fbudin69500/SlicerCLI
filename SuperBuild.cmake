@@ -232,23 +232,17 @@ if(APPLE)
     -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
 endif()
 
-set(${PROJECT_NAME}_CLI_RUNTIME_DESTINATION  bin)
-set(${PROJECT_NAME}_CLI_LIBRARY_DESTINATION  lib)
-set(${PROJECT_NAME}_CLI_ARCHIVE_DESTINATION  lib)
-set(${PROJECT_NAME}_CLI_INSTALL_RUNTIME_DESTINATION  bin)
-set(${PROJECT_NAME}_CLI_INSTALL_LIBRARY_DESTINATION  lib)
-set(${PROJECT_NAME}_CLI_INSTALL_ARCHIVE_DESTINATION  lib)
 #-----------------------------------------------------------------------------
 # Add external project CMake args
 #-----------------------------------------------------------------------------
 foreach(var ${ListModules} )
-  option(BUILD_${var} "Build ${var}" OFF)
+  option(BUILD_CLI_${var} "Build ${var}" OFF)
   if( DEFINED StringModules )#Even if we don't want to build on module, we still download it's code, because another module might depend on it
     set(StringModules "${StringModules} ${var}" )
   else()
     set(StringModules "${var}")
   endif()
-  list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS BUILD_${var}:BOOL)
+  list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS BUILD_CLI_${var}:BOOL)
 endforeach()
 
 
@@ -257,17 +251,6 @@ list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS
   BUILD_TESTING:BOOL
   ITK_VERSION_MAJOR:STRING
   ITK_DIR:PATH
-
-  ${PROJECT_NAME}_CLI_LIBRARY_OUTPUT_DIRECTORY:PATH
-  ${PROJECT_NAME}_CLI_ARCHIVE_OUTPUT_DIRECTORY:PATH
-  ${PROJECT_NAME}_CLI_RUNTIME_OUTPUT_DIRECTORY:PATH
-  ${PROJECT_NAME}_CLI_INSTALL_LIBRARY_DESTINATION:PATH
-  ${PROJECT_NAME}_CLI_INSTALL_ARCHIVE_DESTINATION:PATH
-  ${PROJECT_NAME}_CLI_INSTALL_RUNTIME_DESTINATION:PATH
-
-  INSTALL_RUNTIME_DESTINATION:STRING
-  INSTALL_LIBRARY_DESTINATION:STRING
-  INSTALL_ARCHIVE_DESTINATION:STRING
   )
 
 _expand_external_project_vars()

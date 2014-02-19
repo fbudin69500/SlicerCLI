@@ -27,7 +27,14 @@ find_package(VTK NO_MODULE REQUIRED)
 include(${VTK_USE_FILE})
 
 option(BUILD_TESTING "Build Testing" ON)
-
+if( BUILD_TESTING )
+  enable_testing()
+  include(CTest)
+  set(BASELINE "${CMAKE_CURRENT_SOURCE_DIR}/Testing/Data/Baseline/CLI")
+  set(TEST_DATA "${CMAKE_CURRENT_SOURCE_DIR}/Testing/Data/Input")
+  set(MRML_TEST_DATA "${CMAKE_CURRENT_SOURCE_DIR}/Libs/MRML/Core/Testing/TestData")
+  set(TEMP "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary")
+endif()
 #-----------------------------------------------------------------------------
 # set SlicerExecutionModel install variables
 #-----------------------------------------------------------------------------
@@ -45,6 +52,7 @@ set( Slicer_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 set( Slicer_INSTALL_BIN_DIR bin )
 set( Slicer_INSTALL_LIB_DIR lib )
 
+
 set(SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES
     ${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES} ITKFactoryRegistration
     CACHE INTERNAL "SlicerExecutionModel extra executable target libraries" FORCE
@@ -59,12 +67,14 @@ endforeach()
 
 add_subdirectory(Libs/ITKFactoryRegistration)
 add_subdirectory(Base/CLI)
+link_directories(lib)
+link_libraries(ITKFactoryRegistration)
 #add_subdirectory(CLI)
 file( GLOB ListModules RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/Modules/CLI/ Modules/CLI/* )
 list( SORT ListModules )
 foreach( var ${ListModules} )
   set( ${var}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Modules/CLI/${var} )
-  if( BUILD_${var} )
+  if( BUILD_CLI_${var} )
     add_subdirectory( Modules/CLI/${var} )
   endif()
 endforeach()
