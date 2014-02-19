@@ -1,41 +1,6 @@
-set( ListModules
-     MedianImageFilter
-     N4ITKBiasFieldCorrection
-     ResampleDTIVolume
-     ResampleScalarVectorDWIVolume 
-     AffineRegistration
-     RigidRegistration
-     ThresholdScalarVolume
-     AddScalarVolumes
- 	BSplineDeformableRegistration
-BSplineToDeformationField
-CastScalarVolume
-CheckerBoardFilter
-ConnectedComponent
-DWIJointRicianLMMSEFilter
-DWIRicianLMMSEFilter
-#DWIToDTIEstimation
-#DWIUnbiasedNonLocalMeansFilter
-#DiffusionTensorScalarMeasurements
-#DiffusionWeightedVolumeMasking
-GaussianBlurImageFilter
-GradientAnisotropicDiffusion
- 	GrayscaleFillHoleImageFilter
-HistogramMatching
-ImageLabelCombine
- 	LabelMapSmoothing
-LinearRegistration
-MaskScalarVolume
-#MultiplyScalarVolumes->vtkITK
-OrientScalarVolume
-OtsuThresholdImageFilter
-OtsuThresholdSegmentation
-RobustStatisticsSegmenter
-SimpleRegionGrowingSegmentation
-SubtractScalarVolumes
-ThresholdScalarVolume
-VotingBinaryHoleFillingImageFilter
-   )
+string(REPLACE "\"" "" StringModules ${StringModules})
+string(REPLACE " " ";" ListModules ${StringModules})
+
 if( ${Slicer_Revision} GREATER 0 )
   set( get_revision "-r ${Slicer_Revision}" )
 endif()

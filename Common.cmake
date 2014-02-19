@@ -122,3 +122,42 @@ if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   endif()
 endif()
 
+set( ListModules
+     MedianImageFilter
+     N4ITKBiasFieldCorrection
+     ResampleDTIVolume
+     ResampleScalarVectorDWIVolume 
+     AffineRegistration
+     RigidRegistration
+     ThresholdScalarVolume
+     AddScalarVolumes
+ 	BSplineDeformableRegistration
+BSplineToDeformationField
+CastScalarVolume
+CheckerBoardFilter
+ConnectedComponent
+DWIJointRicianLMMSEFilter
+DWIRicianLMMSEFilter
+#DWIToDTIEstimation->vtkITK+MRML
+#DWIUnbiasedNonLocalMeansFilter->vtkITK+MRML
+#DiffusionTensorScalarMeasurements->vtkITK+MRML
+#DiffusionWeightedVolumeMasking->vtkITK+MRML
+GaussianBlurImageFilter
+GradientAnisotropicDiffusion
+ 	GrayscaleFillHoleImageFilter
+HistogramMatching
+ImageLabelCombine
+ 	LabelMapSmoothing
+LinearRegistration
+MaskScalarVolume
+#MultiplyScalarVolumes->vtkITK
+OrientScalarVolume
+OtsuThresholdImageFilter
+OtsuThresholdSegmentation
+RobustStatisticsSegmenter
+SimpleRegionGrowingSegmentation
+SubtractScalarVolumes
+ThresholdScalarVolume
+VotingBinaryHoleFillingImageFilter
+   )
+

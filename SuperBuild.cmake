@@ -70,6 +70,7 @@ endif()
 #-----------------------------------------------------------------------------
 # Superbuild option(s)
 #-----------------------------------------------------------------------------
+
 option(BUILD_STYLE_UTILS "Build uncrustify, cppcheck, & KWStyle" OFF)
 CMAKE_DEPENDENT_OPTION(
   USE_SYSTEM_Uncrustify "Use system Uncrustify program" OFF
@@ -91,8 +92,6 @@ option(USE_SYSTEM_zlib "build using the system version of zlib" OFF)
 option(USE_SYSTEM_ITK "Build using an externally defined version of ITK" OFF)
 option(USE_SYSTEM_SlicerExecutionModel "Build using an externally defined version of SlicerExecutionModel"  OFF)
 option(USE_SYSTEM_VTK "Build using an externally defined version of VTK" OFF)
-option(USE_SYSTEM_teem "Build using an externally defined version of teem" OFF)
-option(Slicer_BUILD_DICOM_SUPPORT "Build Dicom Support" OFF)
 set( ${PROJECT_NAME}_BUILD_ZLIB_SUPPORT ON )
 option(BUILD_TESTING "Build Testing" OFF)
 #------------------------------------------------------------------------------
@@ -104,16 +103,7 @@ set(${PROJECT_NAME}_DEPENDENCIES
   SlicerExecutionModel
   ${ITK_EXTERNAL_NAME}
   VTK
-  teem
   )
-
-if( Slicer_BUILD_DICOM_SUPPORT )
-  list( APPEND ${PROJECT_NAME}_DEPENDENCIES DCMTK )
-  set( ${PROJECT_NAME}_BUILD_DICOM_SUPPORT ON )
-else()
-  unset( Slicer_BUILD_DICOM_SUPPORT CACHE )
-  set( ${PROJECT_NAME}_BUILD_DICOM_SUPPORT OFF )
-endif()
 
 if(BUILD_STYLE_UTILS)
   list(APPEND ${PROJECT_NAME}_DEPENDENCIES Cppcheck KWStyle Uncrustify)
@@ -211,7 +201,6 @@ list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS
   CMAKE_MODULE_LINKER_FLAGS:STRING
   SITE:STRING
   BUILDNAME:STRING
-  Slicer_BUILD_DICOM_SUPPORT:BOOL
   PYTHON_EXECUTABLE:FILEPATH
   PYTHON_INCLUDE_DIR:PATH
   PYTHON_LIBRARY:FILEPATH
@@ -252,6 +241,17 @@ set(${PROJECT_NAME}_CLI_INSTALL_ARCHIVE_DESTINATION  lib)
 #-----------------------------------------------------------------------------
 # Add external project CMake args
 #-----------------------------------------------------------------------------
+foreach(var ${ListModules} )
+  option(BUILD_${var} "Build ${var}" OFF)
+  if( DEFINED StringModules )#Even if we don't want to build on module, we still download it's code, because another module might depend on it
+    set(StringModules "${StringModules} ${var}" )
+  else()
+    set(StringModules "${var}")
+  endif()
+  list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS BUILD_${var}:BOOL)
+endforeach()
+
+
 list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS
   BUILD_EXAMPLES:BOOL
   BUILD_TESTING:BOOL
@@ -326,6 +326,7 @@ if(BUILD_TESTING AND NOT Slicer_BUILD_${PROJECT_NAME})
     @ONLY)
 endif()
 
+
 #------------------------------------------------------------------------------
 # Configure and build ${PROJECT_NAME}
 #------------------------------------------------------------------------------
@@ -341,9 +342,8 @@ ExternalProject_Add(${proj}
     ${CMAKE_OSX_EXTERNAL_PROJECT_ARGS}
     ${${PROJECT_NAME}_EXTERNAL_PROJECT_ARGS}
     -D${LOCAL_PROJECT_NAME}_SUPERBUILD:BOOL=OFF    #NOTE: VERY IMPORTANT reprocess top level CMakeList.txt
-    -DListModules:STRING=${ListModules}
   INSTALL_COMMAND ""
-  PATCH_COMMAND ${CMAKE_COMMAND} -DSlicer_Revision:STRING=${Slicer_Revision} -DSubversion_SVN_EXECUTABLE:FILEPATH=${Subversion_SVN_EXECUTABLE} -DDOWNLOAD_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/${proj} -P ${CMAKE_CURRENT_SOURCE_DIR}/SuperBuild/SlicerExecutionModelDownload.cmake
+  PATCH_COMMAND ${CMAKE_COMMAND} -DSlicer_Revision:STRING=${Slicer_Revision} -DStringModules:STRING="${StringModules}" -DSubversion_SVN_EXECUTABLE:FILEPATH=${Subversion_SVN_EXECUTABLE} -DDOWNLOAD_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/${proj} -P ${CMAKE_CURRENT_SOURCE_DIR}/SuperBuild/SlicerExecutionModelDownload.cmake
   )
 
 

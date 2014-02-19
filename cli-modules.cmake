@@ -53,6 +53,10 @@ set(SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES
 #-----------------------------------------------------------------------------
 # Add module sub-directory if USE_<MODULENAME> is both defined and true
 #-----------------------------------------------------------------------------
+foreach(var ${ListModules} )
+  option(BUILD_${var} "Build ${var}" OFF)
+endforeach()
+
 add_subdirectory(Libs/ITKFactoryRegistration)
 add_subdirectory(Base/CLI)
 #add_subdirectory(CLI)
@@ -60,5 +64,7 @@ file( GLOB ListModules RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/Modules/CLI/ Modules
 list( SORT ListModules )
 foreach( var ${ListModules} )
   set( ${var}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Modules/CLI/${var} )
-  add_subdirectory( Modules/CLI/${var} )
+  if( BUILD_${var} )
+    add_subdirectory( Modules/CLI/${var} )
+  endif()
 endforeach()
