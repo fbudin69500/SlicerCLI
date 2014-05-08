@@ -237,10 +237,12 @@ endif()
 #-----------------------------------------------------------------------------
 foreach(var ${ListModules} )
   option(BUILD_CLI_${var} "Build ${var}" OFF)
-  if( DEFINED StringModules )#Even if we don't want to build on module, we still download it's code, because another module might depend on it
-    set(StringModules "${StringModules} ${var}" )
-  else()
-    set(StringModules "${var}")
+  if( BUILD_CLI_${var} )
+    if( DEFINED StringModules )#Even if we don't want to build on module, we still download it's code, because another module might depend on it
+      set(StringModules "${StringModules} ${var}" )
+    else()
+      set(StringModules "${var}")
+    endif()
   endif()
   list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS BUILD_CLI_${var}:BOOL)
 endforeach()
