@@ -62,7 +62,7 @@ set(SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES
 # Add module sub-directory if USE_<MODULENAME> is both defined and true
 #-----------------------------------------------------------------------------
 foreach(var ${ListModules} )
-  option(BUILD_${var} "Build ${var}" OFF)
+  option(BUILD_CLI_${var} "Build ${var}" OFF)
 endforeach()
 
 add_subdirectory(Libs/ITKFactoryRegistration)
