@@ -26,8 +26,13 @@ ProjectDependancyPush(CACHED_proj ${proj})
 # SlicerMacroCheckExternalProjectDependency
 set(extProjName VTK) #The find_package known name
 set(proj        VTK) #This local name
-set(${extProjName}_REQUIRED_VERSION "5.10")  #If a required version is necessary, then set this, else leave blank
+option(USE_VTK_6 "Build using VTK version 6" OFF)
 
+if(USE_VTK_6)
+  set(${extProjName}_REQUIRED_VERSION "6.1")  #If a required version is necessary, then set this, else leave blank
+else()
+  set(${extProjName}_REQUIRED_VERSION "5.10")  #If a required version is necessary, then set this, else leave blank
+endif()
 #if(${USE_SYSTEM_${extProjName}})
 #  unset(${extProjName}_DIR CACHE)
 #endif()
@@ -38,18 +43,19 @@ set(${extProjName}_REQUIRED_VERSION "5.10")  #If a required version is necessary
 #  message(FATAL_ERROR "${extProjName}_DIR variable is defined but corresponds to non-existing directory (${${extProjName}_DIR})")
 #endif()
 
-# Set dependency list
-set(${proj}_DEPENDENCIES "")
-if (${PROJECT_NAME}_USE_PYTHONQT)
-  list(APPEND ${proj}_DEPENDENCIES python)
-endif()
-
-# Include dependent projects if any
-SlicerMacroCheckExternalProjectDependency(${proj})
-
 if(NOT ( DEFINED "USE_SYSTEM_${extProjName}" AND "${USE_SYSTEM_${extProjName}}" ) )
   #message(STATUS "${__indent}Adding project ${proj}")
+# Set dependency list
+  set(${proj}_DEPENDENCIES "")
+  if (${PRIMARY_PROJECT_NAME}_USE_PYTHONQT)
+    list(APPEND ${proj}_DEPENDENCIES python)
+  endif()
+  if( ${PRIMARY_PROJECT_NAME}_USE_QT )
+    list(APPEND ${proj}_DEPENDENCIES Qt4)
+  endif()
 
+  # Include dependent projects if any
+  SlicerMacroCheckExternalProjectDependency(${proj})
   # Set CMake OSX variable to pass down the external project
   set(CMAKE_OSX_EXTERNAL_PROJECT_ARGS)
   if(APPLE)
@@ -64,56 +70,56 @@ if(NOT ( DEFINED "USE_SYSTEM_${extProjName}" AND "${USE_SYSTEM_${extProjName}}" 
   set(VTK_WRAP_TCL OFF)
   set(VTK_WRAP_PYTHON OFF)
 
-  if (${PROJECT_NAME}_USE_PYTHONQT)
+  if(${PRIMARY_PROJECT_NAME}_USE_PYTHONQT)
     set(VTK_WRAP_PYTHON ON)
-  endif()
-
-  set(VTK_PYTHON_ARGS
+    set(VTK_PYTHON_ARGS
       -DPYTHON_EXECUTABLE:PATH=${PYTHON_EXECUTABLE}
       -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
       -DPYTHON_LIBRARIES:FILEPATH=${PYTHON_LIBRARIES}
       )
-  if(${PROJECT_NAME}_USE_PYTHONQT)
     list(APPEND VTK_PYTHON_ARGS
       -DVTK_INSTALL_PYTHON_USING_CMAKE:BOOL=ON
       )
+  # Disable Tk when Python wrapping is enabled
+    list(APPEND VTK_PYTHON_ARGS -DVTK_USE_TK:BOOL=OFF)
   endif()
 
   set(VTK_QT_ARGS)
   if(${PRIMARY_PROJECT_NAME}_USE_QT)
-    if(NOT APPLE)
+    if(USE_VTK_6)
       set(VTK_QT_ARGS
-        #-DDESIRED_QT_VERSION:STRING=4 # Unused
-        -DVTK_USE_GUISUPPORT:BOOL=ON
-        -DVTK_USE_QVTK_QTOPENGL:BOOL=ON
-        -DVTK_USE_QT:BOOL=ON
-        -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
+        -DModule_vtkGUISupportQt:BOOL=ON
+        -DModule_vtkViewsQt:BOOL=ON
         )
     else()
+      if(NOT APPLE)
       set(VTK_QT_ARGS
-        -DVTK_USE_CARBON:BOOL=OFF
-        # Default to Cocoa, VTK/CMakeLists.txt will enable Carbon and disable cocoa if needed
-        -DVTK_USE_COCOA:BOOL=ON
-        -DVTK_USE_X:BOOL=OFF
-        #-DVTK_USE_RPATH:BOOL=ON # Unused
         #-DDESIRED_QT_VERSION:STRING=4 # Unused
         -DVTK_USE_GUISUPPORT:BOOL=ON
         -DVTK_USE_QVTK_QTOPENGL:BOOL=ON
         -DVTK_USE_QT:BOOL=ON
-        -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
+        -DVTK_USE_QTCHARTS:BOOL=ON
         )
+      else()
+        set(VTK_QT_ARGS
+          -DVTK_USE_CARBON:BOOL=OFF
+          # Default to Cocoa, VTK/CMakeLists.txt will enable Carbon and disable cocoa if needed
+          -DVTK_USE_COCOA:BOOL=ON
+          -DVTK_USE_X:BOOL=OFF
+          #-DVTK_USE_RPATH:BOOL=ON # Unused
+          #-DDESIRED_QT_VERSION:STRING=4 # Unused
+          -DVTK_USE_GUISUPPORT:BOOL=ON
+          -DVTK_USE_QVTK_QTOPENGL:BOOL=ON
+          -DVTK_USE_QT:BOOL=ON
+          -DVTK_USE_QTCHARTS:BOOL=ON
+          )
+      endif()
     endif()
-    find_package(Qt4 REQUIRED)
   else()
     set(VTK_QT_ARGS
         -DVTK_USE_GUISUPPORT:BOOL=OFF
         -DVTK_USE_QT:BOOL=OFF
         )
-  endif()
-
-  # Disable Tk when Python wrapping is enabled
-  if (${PROJECT_NAME}_USE_PYTHONQT)
-    list(APPEND VTK_QT_ARGS -DVTK_USE_TK:BOOL=OFF)
   endif()
 
   set(slicer_TCL_LIB)
@@ -156,21 +162,27 @@ if(NOT ( DEFINED "USE_SYSTEM_${extProjName}" AND "${USE_SYSTEM_${extProjName}}" 
       -DBUILD_EXAMPLES:BOOL=OFF
       -DBUILD_TESTING:BOOL=OFF
       -DVTK_USE_PARALLEL:BOOL=ON
-      -DVTK_DEBUG_LEAKS:BOOL=${${PROJECT_NAME}_USE_VTK_DEBUG_LEAKS}
+      -DVTK_USE_GL2PS:BOOL=ON
+      -DVTK_DEBUG_LEAKS:BOOL=${${PRIMARY_PROJECT_NAME}_USE_VTK_DEBUG_LEAKS}
       -DVTK_LEGACY_REMOVE:BOOL=OFF
       -DVTK_WRAP_TCL:BOOL=${VTK_WRAP_TCL}
       #-DVTK_USE_RPATH:BOOL=ON # Unused
       ${VTK_TCL_ARGS}
       -DVTK_WRAP_PYTHON:BOOL=${VTK_WRAP_PYTHON}
-      -DVTK_INSTALL_LIB_DIR:PATH=${${PROJECT_NAME}_INSTALL_LIB_DIR}
+      -DVTK_INSTALL_LIB_DIR:PATH=${${PRIMARY_PROJECT_NAME}_INSTALL_LIB_DIR}
       ${VTK_PYTHON_ARGS}
       ${VTK_QT_ARGS}
       ${VTK_MAC_ARGS}
     )
   ### --- End Project specific additions
-#set(${proj}_REPOSITORY ${git_protocol}://vtk.org/VTK.git)
-  set(${proj}_REPOSITORY ${git_protocol}://github.com/BRAINSia/VTK.git)
-  set(${proj}_GIT_TAG "FixClangFailure_VTK5.10_release")
+  if(USE_VTK_6)
+    set(${proj}_GIT_TAG "v6.1.0")
+    set(${proj}_REPOSITORY ${git_protocol}://vtk.org/VTK.git)
+  else()
+    set(${proj}_REPOSITORY ${git_protocol}://github.com/BRAINSia/VTK.git)
+    set(${proj}_GIT_TAG "FixClangFailure_VTK5.10_release")
+  endif()
+
   ExternalProject_Add(${proj}
     GIT_REPOSITORY ${${proj}_REPOSITORY}
     GIT_TAG ${${proj}_GIT_TAG}
@@ -199,10 +211,14 @@ if(NOT ( DEFINED "USE_SYSTEM_${extProjName}" AND "${USE_SYSTEM_${extProjName}}" 
     DEPENDERS configure
     COMMAND ${CMAKE_COMMAND}
     -DVTKSource=<SOURCE_DIR>
+    -DUSE_VTK_6=${USE_VTK_6}
     -P ${VTKPatchScript}
     )
-
-  set(${extProjName}_DIR ${EXTERNAL_BINARY_DIRECTORY}/${proj}-install/lib/vtk-5.10)
+  if(USE_VTK_6)
+    set(${extProjName}_DIR ${EXTERNAL_BINARY_DIRECTORY}/${proj}-install/lib/cmake/vtk-6.1)
+  else()
+    set(${extProjName}_DIR ${EXTERNAL_BINARY_DIRECTORY}/${proj}-install/lib/vtk-5.10)
+  endif()
 else()
   if(${USE_SYSTEM_${extProjName}})
     find_package(${extProjName} ${${extProjName}_REQUIRED_VERSION} REQUIRED)
@@ -213,7 +229,9 @@ else()
   SlicerMacroEmptyExternalProject(${proj} "${${proj}_DEPENDENCIES}")
 endif()
 
-list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS ${extProjName}_DIR:PATH)
+list(APPEND ${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_VARS ${extProjName}_DIR:PATH USE_VTK_6:BOOL )
+_expand_external_project_vars()
+set(COMMON_EXTERNAL_PROJECT_ARGS ${${CMAKE_PROJECT_NAME}_SUPERBUILD_EP_ARGS})
 
 ProjectDependancyPop(CACHED_extProjName extProjName)
 ProjectDependancyPop(CACHED_proj proj)
