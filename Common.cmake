@@ -117,37 +117,31 @@ set( ListModules
      N4ITKBiasFieldCorrection
      ResampleDTIVolume
      ResampleScalarVectorDWIVolume 
-     AffineRegistration
-     RigidRegistration
      ThresholdScalarVolume
      AddScalarVolumes
- 	BSplineDeformableRegistration
-BSplineToDeformationField
-CastScalarVolume
-CheckerBoardFilter
-ConnectedComponent
-DWIJointRicianLMMSEFilter
-DWIRicianLMMSEFilter
-#DWIToDTIEstimation->vtkITK+MRML
-#DWIUnbiasedNonLocalMeansFilter->vtkITK+MRML
-#DiffusionTensorScalarMeasurements->vtkITK+MRML
-#DiffusionWeightedVolumeMasking->vtkITK+MRML
-GaussianBlurImageFilter
-GradientAnisotropicDiffusion
- 	GrayscaleFillHoleImageFilter
-HistogramMatching
-ImageLabelCombine
- 	LabelMapSmoothing
-LinearRegistration
-MaskScalarVolume
-#MultiplyScalarVolumes->vtkITK
-OrientScalarVolume
-OtsuThresholdImageFilter
-OtsuThresholdSegmentation
-RobustStatisticsSegmenter
-SimpleRegionGrowingSegmentation
-SubtractScalarVolumes
-ThresholdScalarVolume
-VotingBinaryHoleFillingImageFilter
+     BSplineToDeformationField
+     CastScalarVolume
+     CheckerBoardFilter
+     ConnectedComponent
+     DWIJointRicianLMMSEFilter
+     DWIRicianLMMSEFilter
+     #DWIToDTIEstimation->vtkITK+MRML
+     #DWIUnbiasedNonLocalMeansFilter->vtkITK+MRML
+     #DiffusionTensorScalarMeasurements->vtkITK+MRML
+     #DiffusionWeightedVolumeMasking->vtkITK+MRML
+     GaussianBlurImageFilter
+     GradientAnisotropicDiffusion
+     GrayscaleFillHoleImageFilter
+     HistogramMatching
+     ImageLabelCombine
+     LabelMapSmoothing
+     MaskScalarVolume
+     #MultiplyScalarVolumes->vtkITK
+     OrientScalarVolume
+     RobustStatisticsSegmenter
+     SimpleRegionGrowingSegmentation
+     SubtractScalarVolumes
+     ThresholdScalarVolume
+     VotingBinaryHoleFillingImageFilter
    )
 
