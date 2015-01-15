@@ -5,7 +5,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/Common.cmake)
 
 #-----------------------------------------------------------------------------
 find_package(SlicerExecutionModel NO_MODULE REQUIRED GenerateCLP)
-include(${GenerateCLP_USE_FILE})
 include(${SlicerExecutionModel_USE_FILE})
 
 #-----------------------------------------------------------------------------
@@ -19,7 +18,7 @@ if(${ITK_VERSION_MAJOR} VERSION_LESS ${expected_ITK_VERSION_MAJOR})
                       "The following configuration files were considered but not accepted:\n"
                       "  ${ITK_CONFIG}, version: ${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}.${ITK_VERSION_PATCH}\n")
 endif()
-
+set(ITK_NO_IO_FACTORY_REGISTER_MANAGER 1) # See Libs/ITKFactoryRegistration/CMakeLists.txt
 include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
