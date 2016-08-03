@@ -176,8 +176,8 @@ if(NOT ( DEFINED "USE_SYSTEM_${extProjName}" AND "${USE_SYSTEM_${extProjName}}" 
     )
   ### --- End Project specific additions
   if(USE_VTK_6)
-    set(${proj}_GIT_TAG "v6.1.0")
-    set(${proj}_REPOSITORY ${git_protocol}://vtk.org/VTK.git)
+    set(${proj}_GIT_TAG "0f8ed32e0b7018d776271dbf5f27968b716a9e10")
+    set(${proj}_REPOSITORY ${git_protocol}://github.com/Slicer/VTK.git)
   else()
     set(${proj}_REPOSITORY ${git_protocol}://github.com/BRAINSia/VTK.git)
     set(${proj}_GIT_TAG "FixClangFailure_VTK5.10_release")
@@ -215,7 +215,7 @@ if(NOT ( DEFINED "USE_SYSTEM_${extProjName}" AND "${USE_SYSTEM_${extProjName}}" 
     -P ${VTKPatchScript}
     )
   if(USE_VTK_6)
-    set(${extProjName}_DIR ${EXTERNAL_BINARY_DIRECTORY}/${proj}-install/lib/cmake/vtk-6.1)
+    set(${extProjName}_DIR ${EXTERNAL_BINARY_DIRECTORY}/${proj}-install/lib/cmake/vtk-7.1)
   else()
     set(${extProjName}_DIR ${EXTERNAL_BINARY_DIRECTORY}/${proj}-install/lib/vtk-5.10)
   endif()
